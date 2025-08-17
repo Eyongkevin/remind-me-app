@@ -42,6 +42,9 @@ This will be the default page when you start the application. It will contain th
 
 <img src='homePage.png' width=300>
 
+**Later**
+- `Home Screen`: Add a calendar to show a graphical representation of remainders according to selected date
+
 ### ListRemainder Screen
 This screen should list all remainders (sorted by day/time) that have been set in the application.
 
@@ -56,6 +59,12 @@ This screen should have
         - `Today's date` is default
     - active/desable state
         - `active` is default
+
+**Later**
+If the number of reminders grows, then it won't be ideal to list everything on the app. We can maybe 
+- use pagination or 
+- a button to load more or 
+- as we scroll down, more is loaded.
 
 #### Reminder Item
 Each reminder item should have the following:
@@ -94,6 +103,8 @@ It contains configuration to add/update remainder events
 
 <img src='addReminder.png' width=400>
 
+**Later**
+- If `repeat` is not selected, we should be able to choose if the reminder should be deleted after the alarm gets triggered  
 # TimeTracker
 This screen will contain functionalities that has to do with tracking time. It will display the time, timezone and date in real-time base on the system's timezone
 
