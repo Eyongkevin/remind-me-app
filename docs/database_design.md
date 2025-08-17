@@ -17,6 +17,7 @@ The purpose of the Remind-Me-App database is to store task reminder information 
 - List reminder information sorted by time
 - filter reminder information by `status`, `day` and `state`
 - Search reminder by label
+- delete all reminders
 
 
 ### Phase 2
