@@ -167,7 +167,7 @@ def fetch_today_reminders():
         cursor = conn.cursor()
         print("Successfully Connected to SQLite")
 
-        day_abbr = f"%{date.today().ctime().split()[0]}%"
+        day_abbr = f"%{date.today().ctime().split()[0]}%"  # LIKE %Sun%
 
         query = """
             SELECT * FROM reminder WHERE days LIKE ?;
@@ -334,12 +334,13 @@ def delete_all():
 
 if __name__ == "__main__":
 
-    ##  Save reminder data
-    # label = "Take a nap"
-    # days = ("Mon", "Wed", "Fri")
+    #  Save reminder data
+    # label = "Prepare for church"
+    # days = ("Sun",)
     # alert_type = {"sound": True, "popup": False}
-    # alert_time = time(15)
+    # alert_time = time(8, 15)
     # repeat = True
+    # active = True
 
     # save_reminder(
     #     label,
@@ -349,12 +350,12 @@ if __name__ == "__main__":
     #     repeat,
     # )
     # ------------------------------------------
-    ##  Update Reminder
-    # id = 5
-    # label = "Play with Eliana"
-    # days = ("Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun")
+    #  Update Reminder
+    # id = 7
+    # label = "Prepare for church"
+    # days = ("Sun",)
     # alert_type = {"sound": True, "popup": False}
-    # alert_time = time(22, 30)
+    # alert_time = time(23, 30)
     # repeat = True
     # active = True
 
@@ -369,12 +370,12 @@ if __name__ == "__main__":
     # )
     # ------------------------------------------
     ## Delete reminder
-    # id = 3
+    # id = 2
     # delete_reminder(id)
     # ------------------------------------------
     ## Disable/Enable reminder
-    # id = 1
-    # active = True
+    # id = 3
+    # active = False
     # toogle_state(id, active)
     # ------------------------------------------
     ## List reminder information sorted by time
@@ -398,23 +399,23 @@ if __name__ == "__main__":
     # ...:         # build object
     # ...:         return self
     ########## By day
-    # day = "Mon"
+    # day = "Sun"
 
     # reminders = fetch_by_day(day)
     # print(reminders)
 
     ########## By status
-    # status = False
+    # status = True
     # reminders = fetch_by_active(status)
     # print(reminders)
 
     ########## By state
-    # state = "Passed"
+    # state = "Pending"
     # reminders = fetch_by_state(state)
     # print(reminders)
     # ------------------------------------------
     ## Search By Label
-    # label = "re"
+    # label = "break"
     # reminders = search_by_label(label)
     # print(reminders)
     # ------------------------------------------
