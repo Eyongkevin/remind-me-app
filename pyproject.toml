@@ -1,0 +1,11 @@
+[project]
+name = "remind-me-app"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "kivy>=2.3.1",
+    "kivymd",
+]
+
+[tool.uv.sources]
+kivymd = { url = "https://github.com/kivymd/KivyMD/archive/master.zip" }
