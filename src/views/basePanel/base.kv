@@ -1,0 +1,22 @@
+
+<BaseGridLayout>:
+    cols: 1
+    size: root.width, root.height 
+    Label:
+        text: 'Remindme~app'
+        background_color: (2/255, 77/255, 17/255, 1)
+        size_hint_y: None
+        height: '30dp'
+        canvas.before:
+            Color:
+                rgba: self.background_color
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        color: (1,1,1,1) # white
+        bold: True 
+        italic: True 
+        outline_color: (0,0,1) # blue
+        outline_width: 10
+        font_size: root.width / 20
+
