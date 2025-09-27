@@ -1,2 +1,2 @@
 start:
-	uv run -m main
+	python -m main
