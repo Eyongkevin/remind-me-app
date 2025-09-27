@@ -1,7 +1,16 @@
-
+#: import HomeItem src.views.homeItem.home.HomeItem
+#: import ListReminderItem src.views.listReminderItem.list_reminder.ListReminderItem
+#: import AddReminderItem src.views.addReminderItem.add_reminder.AddReminderItem
+#: import TimeTrackerItem src.views.timeTrackerItem.time_tracker.TimeTrackerItem
 <BaseGridLayout>:
     cols: 1
     size: root.width, root.height 
+
+    home_item: home_item
+    add_reminder_item: add_reminder_item
+    list_reminder_item:list_reminder_item
+    time_tracker_item:time_tracker_item
+
     Label:
         text: 'Remindme~app'
         background_color: (2/255, 77/255, 17/255, 1)
@@ -14,9 +23,40 @@
                 size: self.size
                 pos: self.pos
         color: (1,1,1,1) # white
-        bold: True 
+        # bold: True 
         italic: True 
         outline_color: (0,0,1) # blue
         outline_width: 10
         font_size: root.width / 20
+
+    BasePanel:
+        tab_pos: 'left_top'
+        # do_default_tab: False
+        default_tab: home_item
+        tab_height: self.height / 15
+        tab_width: self.width / 10
+
+        TimeTrackerItem:
+            id: time_tracker_item
+            text: ''
+            image_source: 'assets/images/timer.png'
+            on_release: app.root.activate_item(self)
+        ListReminderItem:
+            id: list_reminder_item
+            text: ''
+            image_source: 'assets/images/list.png'
+            on_release: app.root.activate_item(self)
+
+        AddReminderItem:
+            id: add_reminder_item
+            text: ''
+            image_source:'assets/images/add.png'
+            on_release: app.root.activate_item(self)
+            
+        HomeItem:
+            id: home_item
+            text: ''
+            image_source: 'assets/images/home_active.png'
+            on_release: app.root.activate_item(self)
+
 
