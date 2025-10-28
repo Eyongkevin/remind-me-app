@@ -10,7 +10,8 @@
     time_hours: time_hours
     time_minutes: time_minutes
     time_seconds: time_seconds
-    submit: submit
+    submit_btn: submit_btn
+    submit_notification_msg:submit_notification_msg
     GridLayout:
         cols: 1
         row_default_height: '50dp'
@@ -187,12 +188,15 @@
                     background_color: (252/255, 36/255, 8/255, 1)
                     on_release: root.reset()
                 Button:
-                    id: submit
+                    id: submit_btn
                     text: 'Submit'
                     disabled: True 
+                    on_release: root.submit()
                     background_color: (4/255, 204/255, 57/255, 1)
         Label: # UI-5
+            id: submit_notification_msg
             text: ''
+            markup: True
             canvas.before:
                 Color:
                     rgba: (64/255, 62/255, 63/255, 1)
@@ -226,7 +230,8 @@
                 text: 'Repeat'
                 size_hint_x: 0.3
             CheckBox:
-                active: False 
+                active: root.restore_days_repeat_check()
+                on_active: root.days_repeat_check(self.active) 
                 size_hint_x: 0.1
                 canvas.before:
                     Color:
