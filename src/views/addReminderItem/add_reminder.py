@@ -1,5 +1,11 @@
+"""Add Reminder Backend
+
+Provides non-UI logic for the AddReminderItem UI
+"""
+
 import os
 
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.storage.jsonstore import JsonStore
@@ -7,6 +13,8 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.tabbedpanel import TabbedPanelItem
 
+from src.db.repositories import schemas
+from src.services import remindme as service_remindme
 from src.utils.constants import BASE_PATH
 from src.widgets.item_header_image import ItemHeaderImageWidget
 
@@ -27,7 +35,79 @@ class AddReminderItem(TabbedPanelItem, ItemHeaderImageWidget):
     time_hours: ObjectProperty
     time_minutes: ObjectProperty
     time_seconds: ObjectProperty
-    submit: ObjectProperty
+    submit_btn: ObjectProperty
+    submit_notification_msg: ObjectProperty
+
+    def submit(self):
+        """Submit data to be saved in the database
+
+        If the submit button is activated, then user can freely submit reminder event.
+
+        Extract data from all fields, then call the service to format and schema to validate.
+        Then, save it via the repositories.
+        """
+
+        # Time
+        hours: str = self.time_hours.text
+        minutes: str = self.time_minutes.text
+        seconds: str = self.time_seconds.text
+
+        # Days
+        days: list[str] = DaysPopup.chosen_days
+
+        # Repeat
+        repeat: bool = DaysPopup.repeat
+
+        # Selected Sound
+        selected_sound: str = SelectedSoundLabel.sound_full_path
+
+        # Alert type
+        alert_type_sound: bool = self.sound_alarm_check.active
+        alert_type_popup: bool = self.popup_alarm_check.active
+
+        # Label
+        label: str = self.label_input.text
+
+        remind_me: schemas.ReadRemindMe | None = service_remindme.insert(
+            hours,
+            minutes,
+            seconds,
+            days,
+            repeat,
+            alert_type_popup,
+            alert_type_sound,
+            selected_sound,
+            label,
+        )
+        message: str = "[color=#a10b0b]Failed[/color]"
+        if remind_me:
+            # send a success notification
+            message = "Successful"
+            self.reset()
+
+        self.push_message(message)
+
+    def push_message(self, message: str):
+        """Notify user of the status of the save data process
+
+        Show notification message and remove after 3 seconds
+
+        Param
+        --------
+        message (str): notification message
+        """
+
+        self.submit_notification_msg.text = message
+        Clock.schedule_once(self.pull_message, 3)
+
+    def pull_message(self, _):
+        """Remove notification message
+
+        Remove notification message after number of seconds indicated in the
+        `push_message` function
+
+        """
+        self.submit_notification_msg.text = ""
 
     def reset(self):
 
@@ -48,9 +128,9 @@ class AddReminderItem(TabbedPanelItem, ItemHeaderImageWidget):
             and self.time_hours.text
             and any([self.popup_alarm_check.active, self.sound_alarm_check.active])
         ):
-            self.submit.disabled = False
+            self.submit_btn.disabled = False
         else:
-            self.submit.disabled = True
+            self.submit_btn.disabled = True
 
     def verify_time_value(self, obj, time_limit=59):
         # it is greater than 0
@@ -80,6 +160,13 @@ class AddReminderItem(TabbedPanelItem, ItemHeaderImageWidget):
 
 class DaysPopup(Popup):
     chosen_days: list[str] = []
+    repeat: bool = False
+
+    def days_repeat_check(self, is_active: bool):
+        DaysPopup.repeat = is_active
+
+    def restore_days_repeat_check(self):
+        return DaysPopup.repeat
 
     def days_popup_check(self, is_active: bool, value: str):
         if is_active:
@@ -108,6 +195,7 @@ class FilePickerPopup(Popup):
     def select_file(self):
         if self.file_chooser.selection:
             selected_audio = self.file_chooser.selection[0]
+            SelectedSoundLabel.sound_full_path = selected_audio
             SelectedSoundLabel.instance.text = self._prepare_file_name(selected_audio)
             STORE.put("folder", path=self.file_chooser.path)
         self.dismiss()
@@ -146,6 +234,7 @@ class DaysLabel(Label):
 
 class SelectedSoundLabel(Label):
     instance = None
+    sound_full_path: str = ""
 
     def on_kv_post(self, base_widget):
         SelectedSoundLabel.instance = self
