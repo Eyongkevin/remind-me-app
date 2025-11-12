@@ -88,6 +88,7 @@ Here are a few things that was done:
 
 <img src="docs/insert_data/insert_data.png" width=500 />
 
+Here are a few things that was done:
 - 👉🏼 Install packages
 - 👉🏼 Set database URL
 - 👉🏼 Create engine and session
@@ -103,4 +104,18 @@ Here are a few things that was done:
 - [YouTube video](https://www.youtube.com/watch?v=BFfb7Cxo0fg)
 
 ## Part 7: List Reminder Tab Item
+🔔 In Part 7 of this Kivy project series, we built the UI that lists reminders so that a user can manage, filter, and search reminder events.
+
+<img src="docs/list_reminder_ui.png" width=200 />
+
+Here are a few things that was done:
+- 👉🏼 Step 1: Present new design
+- 👉🏼 Step 2: UI structure with two sections
+- 👉🏼 Step 3: Filter and search section
+- 👉🏼 Step 4: List reminder section
+- 👉🏼 Step 5: Manage option popup
+- 👉🏼 Step 6: Filter popup
+- 👉🏼 Step 7: Filter display section
+
+## Part 8: Filter and Seach reminder items
 Comint soon...
