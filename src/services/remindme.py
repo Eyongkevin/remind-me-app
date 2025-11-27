@@ -70,3 +70,68 @@ def insert(
 
     # Repository to save the reminder data
     return repo_remindme.create_remindme(validated_data)
+
+
+def fetch_data() -> list[dict[str, str | int]]:
+    return [
+        {
+            "id": 1,
+            "label": "Short break",
+            "alert_time": "11:30:00",  # time
+            "days": "Mon, Tue, Wed, Thur, Fri, Sat",  # list[str]
+            "state": "active",
+            "status": "pending",
+            "alert_types": "sound, popup",  # dict[str, bool]
+            "repeat": "true",  # bool
+        },
+        {
+            "id": 2,
+            "label": "Done for the day",
+            "alert_time": "22:00:00",
+            "days": "Tue, Fri, Sun",
+            "state": "inactive",
+            "status": "passed",
+            "alert_types": "sound",
+            "repeat": "false",
+        },
+        {
+            "id": 3,
+            "label": "Review project",
+            "alert_time": "13:00:00",
+            "days": "Mon, Thur, Fri",
+            "state": "active",
+            "status": "pending",
+            "alert_types": "popup",
+            "repeat": "true",
+        },
+        {
+            "id": 4,
+            "label": "Family time",
+            "alert_time": "15:00:00",
+            "days": "Tue, Fri, Sat",
+            "state": "active",
+            "status": "passed",
+            "alert_types": "sound",
+            "repeat": "false",
+        },
+        {
+            "id": 5,
+            "label": "Take a walk",
+            "alert_time": "17:30:00",
+            "days": "Mon, Thur, Fri, Sat",
+            "state": "active",
+            "status": "pending",
+            "alert_types": "sound, popup",
+            "repeat": "true",
+        },
+        {
+            "id": 6,
+            "label": "Watch news",
+            "alert_time": "20:00:00",
+            "days": "Tue, Fri, Sat",
+            "state": "active",
+            "status": "passed",
+            "alert_types": "popup",
+            "repeat": "true",
+        },
+    ]

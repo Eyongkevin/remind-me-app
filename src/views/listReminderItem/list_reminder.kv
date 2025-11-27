@@ -1,10 +1,546 @@
-<ListReminderItem>:
-    BoxLayout:
-        orientation: "vertical"
-        spacing: "10dp"
-        padding: "20dp"
+#:import Factory kivy.factory.Factory
 
-        Label:
-            text: "Welcome to Reminder List"
-            font_size: "20sp"
-            halign: "center"
+<ListReminderItem>:
+    reminder_list_box: reminder_list_box
+    reminder_list_view: reminder_list_view
+    search_input:search_input
+    GridLayout: # UI-1
+        cols: 1
+        rows: 2
+        padding: 5, 5
+        GridLayout: # UI-1-1
+            cols:3
+            padding: 5, 0
+            size_hint_y: None 
+            height: "25dp"
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#ffffff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            
+            MDIconButton:
+                size_hint_x: 0.1
+                icon: 'filter-outline'
+                pos_hint: {'center_y': 0.5}
+                on_press: Factory.ReminderListFilterPopup().open()
+            
+            MDIconButton:
+                size_hint_x: 0.1
+                icon: 'calendar'
+                pos_hint: {'center_y': 0.5}
+                # on_press: 
+
+            MDTextField:
+                id: search_input
+                mode: 'outlined'
+                size_hint_x: 0.8
+                pos_hint: {'center_y': 0.5}
+                size_hint_y: None 
+                height: '20dp'
+                color: (247/255, 134/255, 126/255, 1)
+                on_text: root.search_reminder()
+                MDTextFieldTrailingIcon:
+                    icon: 'magnify'
+
+
+        BoxLayout: # UI-1-2
+            id: reminder_list_box
+            orientation: 'vertical'
+            ReminderListView:
+                id: reminder_list_view
+
+
+<ReminderState>:
+    GridLayout:
+        canvas.before:
+            Color: 
+                rgba: (60/255, 60/255, 61/255, 1)
+            Rectangle:
+                pos: self.pos 
+                size: self.size
+        cols: 2
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.9
+            Label:
+                text: root.label
+                color: (1,1,1,1)
+                outline_color: (10/255,10/255,10/255)
+                outline_width:10
+                font_size: 25
+            Label:
+                text: root.days 
+                font_size: 15
+                color: '#cdcdcdff'
+            BoxLayout:
+                orientation: 'horizontal'
+                Label:
+                    text: root.alert_time
+                    font_size: 19
+                MDIcon:
+                    icon: 'check' if root.state == 'active' else 'alpha-x'
+                    font_size: 18
+                    icon_color: '#059820ff' if root.state == 'active' else '#f42020ff'
+                Label:
+                    text: root.status 
+                    font_size: 19
+                    color: '#f42020ff' if root.status == 'passed' else '#ffffffff'
+                    size_hint_x: 0.9
+                BoxLayout:
+                    orientation: 'horizontal'
+                    MDIcon:
+                        icon: 'open-in-new' if 'popup' in root.alert_types else ''
+                        font_size: '1sp'
+                        size_hint_x: 0.1
+                        size_hint: None, None 
+                        size: 1, 1
+                    MDIcon:
+                        icon: 'music' if 'sound' in root.alert_types else ''
+                        font_size: '1sp'
+                        size_hint_x: 0.1
+                        size_hint: None, None 
+                        size: 71, 71
+                    MDIcon:
+                        icon: 'repeat-variant' if root.repeat == 'true' else ''
+                        font_size: '1sp'
+                        size_hint_x: 0.1
+                        size_hint: None, None 
+                        size: 72, 72
+        MDIconButton:
+            size_hint_x: 0.1
+            icon: 'dots-vertical'
+            pos_hint: {'center_y': 0.5}
+            on_press: app.root.list_reminder_item.open_menu(self, root.id)
+
+<ReminderListView>:
+    viewclass: 'ReminderState'
+    RecycleBoxLayout:
+        padding: 20
+        spacing: 10
+        default_size: None, '56dp'
+        default_size_hint: 1, None 
+        size_hint_y: None 
+        height: self.minimum_height
+        orientation: 'vertical'
+
+
+<ReminderListFilterPopup>:
+    auto_dismiss: True
+    title: 'Filter'
+    size_hint: 0.9, 0.65
+    GridLayout:
+        rows: 5
+        spacing: 10, 10
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None 
+            height: '60dp'
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#373535ff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            Label:
+                text: 'Days'
+                halign: 'center'
+                text_size: self.width * .8, None 
+                color: (1,1,1,1)
+                outline_color:  (10/255,10/255,10/255)
+                outline_width: 10
+                font_size: 23
+            GridLayout:
+                cols: 7
+                size_hint_y: None 
+                spacing: 10, 10
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Mon'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Mon', 'days')
+                        on_active: root.filter_check(self.active, 'Mon', 'days')
+
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Tue'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Tue', 'days')
+                        on_active: root.filter_check(self.active, 'Tue', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Wed'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Wed', 'days')
+                        on_active: root.filter_check(self.active, 'Wed', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Thur'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Thur', 'days')
+                        on_active: root.filter_check(self.active, 'Thur', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Fri'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Fri', 'days')
+                        on_active: root.filter_check(self.active, 'Fri', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Sat'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Sat', 'days')
+                        on_active: root.filter_check(self.active, 'Sat', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'vertical'
+                    Label:
+                        text: 'Sun'
+                        size_hint_x: 0.1
+                        font_size: '9dp'
+                        pos_hint: {'center_x': 0.5}
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint: 0.5, 0.5
+                        active: root.restore_filter_check('Sun', 'days')
+                        on_active: root.filter_check(self.active, 'Sun', 'days')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None 
+            height: '45dp'
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#373535ff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            Label:
+                text: 'Status'
+                halign: 'center'
+                text_size: self.width * .8, None 
+                color: (1,1,1,1)
+                outline_color:  (10/255,10/255,10/255)
+                outline_width: 10
+                font_size: 23
+            GridLayout:
+                cols: 2
+                size_hint: None, None 
+                width: '200dp'
+                height: '17dp'
+                pos_hint: {'center_x': 0.5}
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Pending'
+                        size_hint_x: 0.8
+                        color: '#08c935ff'
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('pending', 'status')
+                        on_active: root.filter_check(self.active, 'pending', 'status')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Passed'
+                        size_hint_x: 0.8
+                        color: '#c90808ff'
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('passed', 'status')
+                        on_active: root.filter_check(self.active, 'passed', 'status')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None 
+            height: '45dp'
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#373535ff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            Label:
+                text: 'State'
+                halign: 'center'
+                text_size: self.width * .8, None 
+                color: (1,1,1,1)
+                outline_color:  (10/255,10/255,10/255)
+                outline_width: 10
+                font_size: 23
+            GridLayout:
+                cols: 2
+                size_hint: None, None 
+                width: '200dp'
+                height: '17dp'
+                pos_hint: {'center_x': 0.5}
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Active'
+                        size_hint_x: 0.8
+                        color: '#08c935ff'
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('active', 'state')
+                        on_active: root.filter_check(self.active, 'active', 'state')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Inactive'
+                        size_hint_x: 0.8
+                        color: '#c90808ff'
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('inactive', 'state')
+                        on_active: root.filter_check(self.active, 'inactive', 'state')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None 
+            height: '45dp'
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#373535ff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            Label:
+                text: 'Alert'
+                halign: 'center'
+                text_size: self.width * .8, None 
+                color: (1,1,1,1)
+                outline_color:  (10/255,10/255,10/255)
+                outline_width: 10
+                font_size: 23
+            GridLayout:
+                cols: 2
+                size_hint: None, None 
+                width: '200dp'
+                height: '17dp'
+                pos_hint: {'center_x': 0.5}
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Sound'
+                        size_hint_x: 0.8
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('sound', 'alert_types')
+                        on_active: root.filter_check(self.active, 'sound', 'alert_types')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Popup'
+                        size_hint_x: 0.8
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('popup', 'alert_types')
+                        on_active: root.filter_check(self.active, 'popup', 'alert_types')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos   
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: None 
+            height: '45dp'
+            canvas.before:
+                Color:
+                    rgba: utils.get_color_from_hex('#373535ff')
+                Rectangle:
+                    size: self.size 
+                    pos: self.pos
+            Label:
+                text: 'Repeat'
+                halign: 'center'
+                text_size: self.width * .8, None 
+                color: (1,1,1,1)
+                outline_color:  (10/255,10/255,10/255)
+                outline_width: 10
+                font_size: 23
+            GridLayout:
+                cols: 2
+                size_hint: None, None 
+                width: '200dp'
+                height: '17dp'
+                pos_hint: {'center_x': 0.5}
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'Yes'
+                        size_hint_x: 0.8
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('true', 'repeat')
+                        on_active: root.filter_check(self.active, 'true', 'repeat')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                        text: 'No'
+                        size_hint_x: 0.8
+                        font_size: '9dp'
+                    CheckBox:
+                        pos_hint: {'center_x': 0.5}
+                        size_hint_x: 0.2
+                        active: root.restore_filter_check('false', 'repeat')
+                        on_active: root.filter_check(self.active, 'false', 'repeat')
+                        canvas.before:
+                            Color:
+                                rgba: utils.get_color_from_hex('#aaaaaaff')
+                            Rectangle:
+                                size: self.size 
+                                pos: self.pos
+
+<FilterGridLayout>:
+    filter_options: filter_options
+    cols: 2
+    size_hint_y: None
+    canvas.before:
+        Color:
+            rgba: utils.get_color_from_hex('#473a3aff')
+        Rectangle:
+            size: self.size 
+            pos: self.pos
+    BoxLayout:
+        id: filter_options
+        orientation: 'vertical'
+        size_hint_x: 0.9
+    Button:
+        text: 'X'
+        size_hint_x: 0.1
+        bold: True
+        background_color: utils.get_color_from_hex('#473a3aff')
+        background_normal: ''
+        color: '#7b0505ff'
+        on_press: root.clear_filters()
