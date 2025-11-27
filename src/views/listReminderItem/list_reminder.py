@@ -1,3 +1,5 @@
+import re
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import NumericProperty, ObjectProperty, StringProperty
@@ -21,6 +23,9 @@ Builder.load_file(
 
 
 class ListReminderItem(TabbedPanelItem, ItemHeaderImageWidget):
+    search_input: ObjectProperty
+    reminder_list_view: ObjectProperty
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.selected_reminder: int | None = None
@@ -55,11 +60,43 @@ class ListReminderItem(TabbedPanelItem, ItemHeaderImageWidget):
         self.selected_reminder = reminder_id
         self.dropdown.open()
 
+    def search_reminder(self):
+        data = (
+            self.reminder_list_view.filtered_data
+            if self.reminder_list_view.filtered_data
+            else reminder_service.fetch_data()
+        )
+        self.reminder_list_view.data = search(data)
+
 
 class ReminderListView(RecycleView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.data = reminder_service.fetch_data()
+        self.filtered_data = None
+
+    def filter_reminder_list(
+        self,
+        days: list[str] | None = None,
+        status: list[str] | None = None,
+        states: list[str] | None = None,
+        alert_types: list[str] | None = None,
+        repeat: list[str] | None = None,
+    ):
+        # TODO: Fetch from the database
+        data = reminder_service.fetch_data()
+
+        for options, key in [
+            (days, "days"),
+            (status, "status"),
+            (states, "state"),
+            (alert_types, "alert_types"),
+            (repeat, "repeat"),
+        ]:
+            data = filter_by(data, options, key)
+
+        self.filtered_data = data
+        self.data = search(data)
 
 
 class ReminderState(RecycleDataViewBehavior, BoxLayout):
@@ -94,6 +131,11 @@ class ReminderListFilterPopup(Popup):
             remove_filter()
             return
         self.create_filter_option_display()
+
+        app = App.get_running_app()
+        app.root.list_reminder_item.reminder_list_view.filter_reminder_list(
+            self.days, self.status, self.state, self.alert_types, self.repeat
+        )
 
     def filter_check(self, is_active: bool, value: str, option: str):
         if is_active:
@@ -146,7 +188,32 @@ class FilterGridLayout(GridLayout):
 
 def remove_filter():
     app = App.get_running_app()
+    app.root.list_reminder_item.reminder_list_view.filter_reminder_list()
     if len(app.root.list_reminder_item.reminder_list_box.children) > 1:
         app.root.list_reminder_item.reminder_list_box.remove_widget(
             app.root.list_reminder_item.reminder_list_box.children[1]
         )
+
+
+def filter_by(data: list[dict[str, str | int]], options: list[str], key: str):
+    if options:
+        result: list[dict[str, str | int]] = []
+        for reminder in data:
+            for option in options:  # days = ['Mon', 'Sat']
+                if re.search(r"\b%s\b" % option, reminder[key]):
+                    result.append(reminder)
+                    break
+        return result
+    return data
+
+
+def search(data):
+    app = App.get_running_app()
+    search_text = app.root.list_reminder_item.search_input.text
+    if search_text:
+        result = []
+        for reminder in data:
+            if re.search(search_text.lower(), reminder["label"].lower()):
+                result.append(reminder)
+        return result
+    return data

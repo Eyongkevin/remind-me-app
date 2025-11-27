@@ -2,6 +2,8 @@
 
 <ListReminderItem>:
     reminder_list_box: reminder_list_box
+    reminder_list_view: reminder_list_view
+    search_input:search_input
     GridLayout: # UI-1
         cols: 1
         rows: 2
@@ -31,13 +33,14 @@
                 # on_press: 
 
             MDTextField:
+                id: search_input
                 mode: 'outlined'
                 size_hint_x: 0.8
                 pos_hint: {'center_y': 0.5}
                 size_hint_y: None 
                 height: '20dp'
                 color: (247/255, 134/255, 126/255, 1)
-                # on_text:
+                on_text: root.search_reminder()
                 MDTextFieldTrailingIcon:
                     icon: 'magnify'
 
